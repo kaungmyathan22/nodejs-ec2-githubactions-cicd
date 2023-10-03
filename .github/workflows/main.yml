@@ -16,5 +16,19 @@ jobs:
           node-version: 16.x
       - name: Install Dependencies
         run : npm install
-      - name: Test Project
-        run: npm test
+      - name: Login to docker hub
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+      - name: Build docker image
+        run: docker build -t kaungmyathan/nodejs-ec2-github-actions .
+      - name: Publish image to docker hub
+        run: docker push kaungmyathan/nodejs-ec2-github-actions:latest
+  deploy:
+    needs: build
+    runs-on: [ip-172-31-46-114]
+    steps:
+      - name: Pull image from docker hub
+        run: docker pull kaungmyathan/nodejs-ec2-github-actions
+      - name: Delete old container
+        run: docker rm -f nodejs-app-container
+      - name: Run docker container
+        run: docker run -d -p 5000:5000 -name nodejs-app-container kaungmyathan/nodejs-ec2-github-actions
