@@ -24,7 +24,7 @@ jobs:
         run: docker push kaungmyathan/nodejs-ec2-github-actions:latest
   deploy:
     needs: build
-    runs-on: [ip-172-31-46-114]
+    runs-on: self-hosted
     steps:
       - name: Pull image from docker hub
         run: docker pull kaungmyathan/nodejs-ec2-github-actions
